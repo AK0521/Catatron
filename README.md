@@ -1,5 +1,6 @@
 <header>
   <title>Catatron</title>
+  <h1>Catatron</h1>
 </header>
 <body>
 <br>
