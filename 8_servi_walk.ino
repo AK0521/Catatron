@@ -11,6 +11,10 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 #define  FL_knee 1
 #define FR_hip 2
 #define FR_knee 3
+#define BL_hip 4
+#define BL_knee 5
+#define BR_hip 6
+#define BR_knee 7
 
 void setup() {
   // put your setup code here, to run once:
@@ -23,6 +27,11 @@ void setup() {
   pwm.setPWM(1,0,angleToPulseLength(45));
   pwm.setPWM(2,0,angleToPulseLength(120));
   pwm.setPWM(3,0,angleToPulseLength(45));
+  pwm.setPWM(4,0,angleToPulseLength(105));
+  pwm.setPWM(5,0,angleToPulseLength(60));
+  pwm.setPWM(6,0,angleToPulseLength(105));
+  pwm.setPWM(7,0,angleToPulseLength(60));
+
 
   delay(10);
 
@@ -30,93 +39,166 @@ void setup() {
 int angleToPulseLength(int angle) {
   return map(angle, 0, 180, SERVOMIN, SERVOMAX);
 }
-void first_walk_left(int curr_angle[],int FL_hip_angle,int FL_knee_angle,int FR_hip_angle,int FR_knee_angle){
-    float ratio_left=FL_knee_angle/FL_hip_angle;
-    float ratio_right_hip=FR_hip_angle/FL_hip_angle;
-    float ratio_right_knee=FR_knee_angle/FL_hip_angle;
+void first_walk_left(int curr_angle[],int FL_hip_angle,int FL_knee_angle,int FR_hip_angle,int FR_knee_angle,int BL_hip_angle,int BL_knee_angle,int BR_hip_angle,int BR_knee_angle){
+    float FL_ratio_left=FL_knee_angle/FL_hip_angle;
+    float FR_ratio_hip=FR_hip_angle/FL_hip_angle;
+    float FR_ratio_knee=FR_knee_angle/FL_hip_angle;
+    float BL_ratio_hip=BL_hip_angle/FL_hip_angle;
+    float BL_ratio_knee=BL_knee_angle/FL_hip_angle;
+    float BR_ratio_hip=BR_hip_angle/FL_hip_angle;
+    float BR_ratio_knee=BR_knee_angle/FL_hip_angle;
+
   for(int i=0;i<=FL_hip_angle;i++){
     pwm.setPWM(0,0,angleToPulseLength(i+curr_angle[0]));
-    pwm.setPWM(1,0,angleToPulseLength(-ratio_left*i+curr_angle[1]));
+    pwm.setPWM(1,0,angleToPulseLength(-FL_ratio_left*i+curr_angle[1]));
     //delay(10);
-    pwm.setPWM(2,0,angleToPulseLength(-ratio_right_hip*i+curr_angle[2]));
-    pwm.setPWM(3,0,angleToPulseLength(-ratio_right_knee*i+curr_angle[3]));
+    pwm.setPWM(2,0,angleToPulseLength(-FR_ratio_hip*i+curr_angle[2]));
+    pwm.setPWM(3,0,angleToPulseLength(-FR_ratio_knee*i+curr_angle[3]));
+    //delay(10);
+    pwm.setPWM(4,0,angleToPulseLength(+BL_ratio_hip*i+curr_angle[4]));
+    pwm.setPWM(5,0,angleToPulseLength(BL_ratio_knee*i+curr_angle[5]));
+    //delay(10);
+    pwm.setPWM(6,0,angleToPulseLength(-BR_ratio_hip*i+curr_angle[6]));
+    pwm.setPWM(7,0,angleToPulseLength(-BR_ratio_knee*i+curr_angle[7]));
+
     delay(10);
   }
   pwm.setPWM(0,0,angleToPulseLength(curr_angle[0]+FL_hip_angle));
   pwm.setPWM(1,0,angleToPulseLength(curr_angle[1]-FL_knee_angle));
   pwm.setPWM(2,0,angleToPulseLength(curr_angle[2]-FR_hip_angle));
   pwm.setPWM(3,0,angleToPulseLength(curr_angle[3]-FR_knee_angle));
+  pwm.setPWM(4,0,angleToPulseLength(curr_angle[4]+BL_hip_angle));
+  pwm.setPWM(5,0,angleToPulseLength(curr_angle[5]+BL_knee_angle));
+  pwm.setPWM(6,0,angleToPulseLength(curr_angle[6]-BR_hip_angle));
+  pwm.setPWM(7,0,angleToPulseLength(curr_angle[7]-BR_knee_angle));
 
   curr_angle[0]+=FL_hip_angle;
   curr_angle[1]-=FL_knee_angle;
   curr_angle[2]-=FR_hip_angle;
   curr_angle[3]-=FR_knee_angle;
+  curr_angle[4]+=BL_hip_angle;
+  curr_angle[5]+=BL_knee_angle;
+  curr_angle[6]-=BR_hip_angle;
+  curr_angle[7]-=BR_knee_angle;
 
 }
-void walk_cycle(int curr_angle[],int FL_hip_angle,int FL_knee_angle,int FR_hip_angle,int FR_knee_angle){
-  float ratio_left=FL_knee_angle/FL_hip_angle;
-    float ratio_right_hip=FR_hip_angle/FL_hip_angle;
-    float ratio_right_knee=FR_knee_angle/FL_hip_angle;
+void walk_cycle(int curr_angle[],int FL_hip_angle,int FL_knee_angle,int FR_hip_angle,int FR_knee_angle,int BL_hip_angle,int BL_knee_angle,int BR_hip_angle,int BR_knee_angle){
+  float FL_ratio_left=FL_knee_angle/FL_hip_angle;
+    float FR_ratio_hip=FR_hip_angle/FL_hip_angle;
+    float FR_ratio_knee=FR_knee_angle/FL_hip_angle;
+    float BL_ratio_hip=BL_hip_angle/FL_hip_angle;
+    float BL_ratio_knee=BL_knee_angle/FL_hip_angle;
+    float BR_ratio_hip=BR_hip_angle/FL_hip_angle;
+    float BR_ratio_knee=BR_knee_angle/FL_hip_angle;
   for(int i=0;i<=FL_hip_angle;i++){
     pwm.setPWM(0,0,angleToPulseLength(-i+curr_angle[0]));
-    pwm.setPWM(1,0,angleToPulseLength(-ratio_left*i+curr_angle[1]));
+    pwm.setPWM(1,0,angleToPulseLength(-FL_ratio_left*i+curr_angle[1]));
     //delay(10);
-    pwm.setPWM(2,0,angleToPulseLength(+ratio_right_hip*i+curr_angle[2]));
-    pwm.setPWM(3,0,angleToPulseLength(+ratio_right_knee*i+curr_angle[3]));
+    pwm.setPWM(2,0,angleToPulseLength(+FR_ratio_hip*i+curr_angle[2]));
+    pwm.setPWM(3,0,angleToPulseLength(+FR_ratio_knee*i+curr_angle[3]));
+    //delay(10);
+    pwm.setPWM(4,0,angleToPulseLength(-BL_ratio_hip*i+curr_angle[4]));
+    pwm.setPWM(5,0,angleToPulseLength(-BL_ratio_knee*i+curr_angle[5]));
+    //delay(10);
+    pwm.setPWM(6,0,angleToPulseLength(+BR_ratio_hip*i+curr_angle[6]));
+    pwm.setPWM(7,0,angleToPulseLength(+BR_ratio_knee*i+curr_angle[7]));
     delay(10);
   }
   pwm.setPWM(0,0,angleToPulseLength(curr_angle[0]-FL_hip_angle));
   pwm.setPWM(1,0,angleToPulseLength(curr_angle[1]-FL_knee_angle));
   pwm.setPWM(2,0,angleToPulseLength(curr_angle[2]+FR_hip_angle));
   pwm.setPWM(3,0,angleToPulseLength(curr_angle[3]+FR_knee_angle));
+  pwm.setPWM(4,0,angleToPulseLength(curr_angle[4]-BL_hip_angle));
+  pwm.setPWM(5,0,angleToPulseLength(curr_angle[5]-BL_knee_angle));
+  pwm.setPWM(6,0,angleToPulseLength(curr_angle[6]+BR_hip_angle));
+  pwm.setPWM(7,0,angleToPulseLength(curr_angle[7]+BR_knee_angle));
+
 
   curr_angle[0]-=FL_hip_angle;
   curr_angle[1]-=FL_knee_angle;
   curr_angle[2]+=FR_hip_angle;
   curr_angle[3]+=FR_knee_angle;
+  curr_angle[4]-=BL_hip_angle;
+  curr_angle[5]-=BL_knee_angle;
+  curr_angle[6]+=BR_hip_angle;
+  curr_angle[7]+=BR_knee_angle;
 
 
   
   for(int i=0;i<=FL_hip_angle;i++){
-    pwm.setPWM(0,0,angleToPulseLength(i+curr_angle[0]));
-    pwm.setPWM(1,0,angleToPulseLength(ratio_left*i+curr_angle[1]));
+   pwm.setPWM(0,0,angleToPulseLength(+i+curr_angle[0]));
+    pwm.setPWM(1,0,angleToPulseLength(+FL_ratio_left*i+curr_angle[1]));
     //delay(10);
-    pwm.setPWM(2,0,angleToPulseLength(-ratio_right_hip*i+curr_angle[2]));
-    pwm.setPWM(3,0,angleToPulseLength(-ratio_right_knee*i+curr_angle[3]));
+    pwm.setPWM(2,0,angleToPulseLength(-FR_ratio_hip*i+curr_angle[2]));
+    pwm.setPWM(3,0,angleToPulseLength(-FR_ratio_knee*i+curr_angle[3]));
+    //delay(10);
+    pwm.setPWM(4,0,angleToPulseLength(+BL_ratio_hip*i+curr_angle[4]));
+    pwm.setPWM(5,0,angleToPulseLength(+BL_ratio_knee*i+curr_angle[5]));
+    //delay(10);
+    pwm.setPWM(6,0,angleToPulseLength(-BR_ratio_hip*i+curr_angle[6]));
+    pwm.setPWM(7,0,angleToPulseLength(-BR_ratio_knee*i+curr_angle[7]));
     delay(10);
   }
   pwm.setPWM(0,0,angleToPulseLength(curr_angle[0]+FL_hip_angle));
   pwm.setPWM(1,0,angleToPulseLength(curr_angle[1]+FL_knee_angle));
   pwm.setPWM(2,0,angleToPulseLength(curr_angle[2]-FR_hip_angle));
   pwm.setPWM(3,0,angleToPulseLength(curr_angle[3]-FR_knee_angle));
+  pwm.setPWM(4,0,angleToPulseLength(curr_angle[4]+BL_hip_angle));
+  pwm.setPWM(5,0,angleToPulseLength(curr_angle[5]+BL_knee_angle));
+  pwm.setPWM(6,0,angleToPulseLength(curr_angle[6]-BR_hip_angle));
+  pwm.setPWM(7,0,angleToPulseLength(curr_angle[7]-BR_knee_angle));
 
   curr_angle[0]+=FL_hip_angle;
   curr_angle[1]+=FL_knee_angle;
   curr_angle[2]-=FR_hip_angle;
   curr_angle[3]-=FR_knee_angle;
+  curr_angle[4]+=BL_hip_angle;
+  curr_angle[5]+=BL_knee_angle;
+  curr_angle[6]-=BR_hip_angle;
+  curr_angle[7]-=BR_knee_angle;
 
 }
-void last_walk(int curr_angle[],int FL_hip_angle,int FL_knee_angle,int FR_hip_angle,int FR_knee_angle){
-   float ratio_left=FL_knee_angle/FL_hip_angle;
-    float ratio_right_hip=FR_hip_angle/FL_hip_angle;
-    float ratio_right_knee=FR_knee_angle/FL_hip_angle;
+void last_walk(int curr_angle[],int FL_hip_angle,int FL_knee_angle,int FR_hip_angle,int FR_knee_angle,int BL_hip_angle,int BL_knee_angle,int BR_hip_angle,int BR_knee_angle){
+    float FL_ratio_left=FL_knee_angle/FL_hip_angle;
+    float FR_ratio_hip=FR_hip_angle/FL_hip_angle;
+    float FR_ratio_knee=FR_knee_angle/FL_hip_angle;
+    float BL_ratio_hip=BL_hip_angle/FL_hip_angle;
+    float BL_ratio_knee=BL_knee_angle/FL_hip_angle;
+    float BR_ratio_hip=BR_hip_angle/FL_hip_angle;
+    float BR_ratio_knee=BR_knee_angle/FL_hip_angle;
   for(int i=0;i<=FL_hip_angle;i++){
-    pwm.setPWM(0,0,angleToPulseLength(-i+curr_angle[0]));
-    pwm.setPWM(1,0,angleToPulseLength(+ratio_left*i+curr_angle[1]));
+  pwm.setPWM(0,0,angleToPulseLength(-i+curr_angle[0]));
+    pwm.setPWM(1,0,angleToPulseLength(+FL_ratio_left*i+curr_angle[1]));
     //delay(10);
-    pwm.setPWM(2,0,angleToPulseLength(+ratio_right_hip*i+curr_angle[2]));
-    pwm.setPWM(3,0,angleToPulseLength(+ratio_right_knee*i+curr_angle[3]));
+    pwm.setPWM(2,0,angleToPulseLength(+FR_ratio_hip*i+curr_angle[2]));
+    pwm.setPWM(3,0,angleToPulseLength(+FR_ratio_knee*i+curr_angle[3]));
+    //delay(10);
+    pwm.setPWM(4,0,angleToPulseLength(-BL_ratio_hip*i+curr_angle[4]));
+    pwm.setPWM(5,0,angleToPulseLength(-BL_ratio_knee*i+curr_angle[5]));
+    //delay(10);
+    pwm.setPWM(6,0,angleToPulseLength(+BR_ratio_hip*i+curr_angle[6]));
+    pwm.setPWM(7,0,angleToPulseLength(+BR_ratio_knee*i+curr_angle[7]));
+
     delay(10);
+  
   }
   pwm.setPWM(0,0,angleToPulseLength(curr_angle[0]-FL_hip_angle));
   pwm.setPWM(1,0,angleToPulseLength(curr_angle[1]+FL_knee_angle));
   pwm.setPWM(2,0,angleToPulseLength(curr_angle[2]+FR_hip_angle));
   pwm.setPWM(3,0,angleToPulseLength(curr_angle[3]+FR_knee_angle));
+   pwm.setPWM(4,0,angleToPulseLength(curr_angle[4]-BL_hip_angle));
+  pwm.setPWM(5,0,angleToPulseLength(curr_angle[5]-BL_knee_angle));
+  pwm.setPWM(6,0,angleToPulseLength(curr_angle[6]+BR_hip_angle));
+  pwm.setPWM(7,0,angleToPulseLength(curr_angle[7]+BR_knee_angle));
 
   curr_angle[0]-=FL_hip_angle;
   curr_angle[1]+=FL_knee_angle;
   curr_angle[2]+=FR_hip_angle;
   curr_angle[3]+=FR_knee_angle;
+  curr_angle[4]-=BL_hip_angle;
+  curr_angle[5]-=BL_knee_angle;
+  curr_angle[6]+=BR_hip_angle;
+  curr_angle[7]+=BR_knee_angle;
   
 }
 
@@ -125,16 +207,21 @@ void loop() {
   
  
 
-  int curr_angle[4];
+  int curr_angle[8];
   curr_angle[0]=120;
   curr_angle[1]=45;
   curr_angle[2]=120;
   curr_angle[3]=45;
-  first_walk_left(curr_angle,45,15,15,60);
-  walk_cycle(curr_angle,60,45,60,45);
-  last_walk(curr_angle,45,15,15,60);
+  curr_angle[4]=105;
+  curr_angle[5]=60;
+  curr_angle[6]=105;
+  curr_angle[7]=60;
+  first_walk_left(curr_angle,45,15,15,60,10,20,30,45);
+  walk_cycle(curr_angle,60,45,60,45,40,65,40,65);
+  last_walk(curr_angle,45,15,15,60,10,20,30,45);
 
   // Hold start position for a moment
   delay(500);
+
 
 }
